@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Website Builder — Self-Updating Portfolio</title>
+<meta name="description" content="Design your portfolio website in minutes, then hand it to an AI agent to build and deploy." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%232B4BF2'/%3E%3Crect x='10' y='26' width='44' height='12' fill='%23000'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --accent: #2B4BF2;
+    --ink: #0A0A0A;
+    --gray: #6B6B6B;
+    --line: #E4E4E0;
+    --paper: #F6F6F3;
+    --white: #FFFFFF;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: "Inter", "Helvetica Neue", Arial, sans-serif; background: var(--white); color: var(--ink); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 0 28px; }
+
+  /* Header */
+  .b-header { border-bottom: 2px solid var(--ink); padding: 22px 0; position: sticky; top: 0; background: var(--white); z-index: 50; }
+  .b-header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .b-brand { font-family: "Archivo", sans-serif; font-weight: 900; letter-spacing: 0.03em; font-size: 17px; text-decoration: none; color: inherit; display: inline-flex; align-items: center; gap: 9px; }
+  .b-brand i { width: 13px; height: 13px; background: var(--accent); display: inline-block; }
+  .b-steps { display: flex; gap: 8px; align-items: center; font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--gray); }
+  .b-steps b { color: var(--ink); }
+
+  /* Intro */
+  .intro { padding: 56px 0 8px; max-width: 760px; }
+  .intro .kicker { font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; font-weight: 500; }
+  .intro h1 { font-family: "Archivo", sans-serif; font-weight: 900; font-size: clamp(34px, 5vw, 56px); line-height: 1.02; letter-spacing: -0.01em; text-transform: uppercase; margin-bottom: 16px; }
+  .intro p { color: var(--gray); font-size: 16px; max-width: 620px; }
+  .how { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 2px solid var(--ink); margin: 28px 0 8px; }
+  .how div { padding: 16px 18px; border-left: 2px solid var(--ink); }
+  .how div:first-child { border-left: none; }
+  .how span { font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--accent); display: block; margin-bottom: 6px; font-weight: 500; }
+  .how p { font-size: 13.5px; color: var(--ink); }
+
+  /* Layout */
+  .builder { display: grid; grid-template-columns: 520px 1fr; gap: 36px; padding: 36px 0 80px; align-items: start; }
+  .panel { display: flex; flex-direction: column; gap: 0; }
+
+  .step { border: 2px solid var(--ink); border-bottom: none; padding: 26px; }
+  .step:last-child { border-bottom: 2px solid var(--ink); }
+  .step-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 6px; }
+  .step-num { font-family: "Archivo", sans-serif; font-weight: 900; font-size: 15px; color: var(--white); background: var(--ink); width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0; transform: translateY(4px); }
+  .step-head h2 { font-family: "Archivo", sans-serif; font-weight: 800; font-size: 21px; letter-spacing: -0.01em; }
+  .step-desc { color: var(--gray); font-size: 13.5px; margin: 0 0 18px 44px; }
+
+  /* Type cards */
+  .types { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-left: 44px; }
+  .type-card { border: 2px solid var(--line); border-radius: 8px; padding: 14px 12px; cursor: pointer; text-align: center; transition: border-color 0.15s, background 0.15s; }
+  .type-card:hover { border-color: var(--ink); }
+  .type-card.on { border-color: var(--accent); background: #F2F4FF; }
+  .type-card b { display: block; font-family: "Archivo", sans-serif; font-size: 14px; margin-bottom: 4px; }
+  .type-card span { font-size: 11.5px; color: var(--gray); line-height: 1.4; display: block; }
+  .type-card input { display: none; }
+
+  /* Section rows */
+  .sec-row { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin: 0 0 8px 44px; background: var(--white); }
+  .sec-row.off { opacity: 0.45; }
+  .sec-row .tog { width: 20px; height: 20px; accent-color: var(--accent); flex-shrink: 0; cursor: pointer; }
+  .sec-row .t { flex: 1; border: none; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 14px; color: var(--ink); background: transparent; min-width: 0; }
+  .sec-row .t:focus { outline: 1px dashed var(--accent); outline-offset: 3px; }
+  .sec-row .mv { border: 1px solid var(--line); background: var(--white); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 13px; line-height: 1; color: var(--ink); flex-shrink: 0; }
+  .sec-row .mv:hover:not(:disabled) { border-color: var(--ink); }
+  .sec-row .mv:disabled { opacity: 0.25; cursor: default; }
+  .sec-tag { font-family: "JetBrains Mono", monospace; font-size: 10px; color: var(--gray); border: 1px solid var(--line); padding: 2px 7px; border-radius: 20px; white-space: nowrap; }
+
+  /* Design */
+  .swatches { display: flex; gap: 10px; margin: 0 0 16px 44px; align-items: center; flex-wrap: wrap; }
+  .sw { width: 40px; height: 40px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; padding: 0; }
+  .sw.on { border-color: var(--ink); }
+  .sw-custom { width: 40px; height: 40px; border-radius: 50%; border: 2px dashed var(--gray); cursor: pointer; padding: 0; background: conic-gradient(#f55, #ff5, #5f5, #5ff, #55f, #f5f, #f55); }
+  .field { margin: 0 0 14px 44px; }
+  .field label { display: block; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--gray); margin-bottom: 6px; }
+  .field input[type="text"], .field input[type="url"], .field input[type="email"], .field textarea, .field select {
+    width: 100%; border: 2px solid var(--line); border-radius: 8px; padding: 11px 13px; font-size: 14px; font-family: inherit; color: var(--ink); background: var(--white);
+  }
+  .field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--accent); }
+  .field textarea { resize: vertical; min-height: 70px; }
+  .field .hint { font-size: 12px; color: var(--gray); margin-top: 5px; }
+
+  .repo-list { margin: 10px 0 0 44px; max-height: 220px; overflow: auto; border: 2px solid var(--line); border-radius: 8px; }
+  .repo-list label { display: flex; gap: 10px; align-items: flex-start; padding: 9px 12px; border-bottom: 1px solid var(--line); cursor: pointer; font-size: 13px; }
+  .repo-list label:last-child { border-bottom: none; }
+  .repo-list label:hover { background: var(--paper); }
+  .repo-list input { margin-top: 3px; accent-color: var(--accent); }
+  .repo-list b { display: block; font-size: 13px; }
+  .repo-list span { color: var(--gray); font-size: 12px; }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; justify-content: center; padding: 14px 26px; font-family: "Archivo", sans-serif; font-size: 13.5px; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; border: 2px solid var(--ink); border-radius: 4px; cursor: pointer; text-decoration: none; transition: background 0.15s, color 0.15s; }
+  .btn-solid { background: var(--ink); color: #fff; }
+  .btn-solid:hover { background: var(--accent); border-color: var(--accent); }
+  .btn-line { background: transparent; color: var(--ink); }
+  .btn-line:hover { background: var(--ink); color: #fff; }
+  .btn-big { width: calc(100% - 44px); margin-left: 44px; padding: 18px; font-size: 15px; }
+  .btn-sm { padding: 9px 16px; font-size: 12px; }
+
+  /* Brief output */
+  #briefOut { display: none; margin: 18px 0 0 44px; }
+  #briefOut.show { display: block; }
+  #briefText { width: 100%; min-height: 260px; border: 2px solid var(--ink); border-radius: 8px; padding: 14px; font-family: "JetBrains Mono", monospace; font-size: 12px; line-height: 1.6; background: var(--paper); color: var(--ink); }
+  .brief-actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .copied { font-size: 13px; color: var(--accent); font-weight: 600; align-self: center; display: none; }
+
+  /* Preview */
+  .preview-col { position: sticky; top: 96px; }
+  .preview-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .preview-bar b { font-family: "Archivo", sans-serif; font-size: 15px; }
+  .preview-bar span { font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--gray); }
+  .preview-frame { border: 2px solid var(--ink); border-radius: 12px; overflow: hidden; background: var(--white); }
+  .preview-frame iframe { width: 100%; height: 78vh; min-height: 560px; border: none; display: block; }
+
+  footer.b-foot { border-top: 2px solid var(--ink); padding: 26px 0 40px; color: var(--gray); font-size: 13px; }
+  footer.b-foot .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  footer.b-foot a { color: var(--ink); }
+
+  @media (max-width: 1080px) {
+    .builder { grid-template-columns: 1fr; }
+    .preview-col { position: static; }
+    .how { grid-template-columns: 1fr 1fr; }
+    .how div:nth-child(3) { border-left: none; }
+    .how div { border-top: 2px solid var(--ink); }
+    .how div:nth-child(1), .how div:nth-child(2) { border-top: none; }
+  }
+  @media (max-width: 640px) {
+    .types { grid-template-columns: 1fr; }
+    .step, .field, .swatches, .repo-list, .sec-row, .step-desc { margin-left: 0; }
+    .btn-big { width: 100%; margin-left: 0; }
+    #briefOut { margin-left: 0; }
+    .how { grid-template-columns: 1fr; }
+    .how div { border-left: none; border-top: 2px solid var(--ink); }
+    .how div:first-child { border-top: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="b-header">
+  <div class="wrap">
+    <a class="b-brand" href="../">PORTFOLIO<i></i>BUILDER</a>
+    <div class="b-steps"><b>Design</b> &rarr; Copy brief &rarr; Paste into AI &rarr; Live site</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="intro">
+    <p class="kicker">Free &middot; No signup &middot; Open source</p>
+    <h1>Design your website.<br />Let AI build it.</h1>
+    <p>Pick your sections, colors, and fonts, add your links, and get a live preview. Then click one button: we pack every choice into a brief you paste into your AI agent, which fills in the blanks from your LinkedIn and GitHub and puts the site on the internet.</p>
+    <div class="how">
+      <div><span>01</span><p><b>You design.</b> Sections, colors, fonts, links. Watch it live on the right.</p></div>
+      <div><span>02</span><p><b>You copy.</b> One click packs everything into a build brief.</p></div>
+      <div><span>03</span><p><b>AI builds.</b> Paste into Muse, ChatGPT, or Claude. It reads your LinkedIn, writes your copy, fills the gaps.</p></div>
+      <div><span>04</span><p><b>You approve.</b> One confirmation, the agent deploys, you get your link.</p></div>
+    </div>
+  </div>
+
+  <div class="builder">
+    <div class="panel">
+
+      <!-- STEP 1 -->
+      <section class="step">
+        <div class="step-head"><span class="step-num">1</span><h2>What kind of site?</h2></div>
+        <p class="step-desc">This pre-selects the sections each type usually needs. You can change everything after.</p>
+        <div class="types" id="typeCards">
+          <label class="type-card on"><input type="radio" name="stype" value="portfolio" checked /><b>Portfolio</b><span>Show your work, writing &amp; background. For job seekers &amp; makers.</span></label>
+          <label class="type-card"><input type="radio" name="stype" value="freelancer" /><b>Freelancer</b><span>Sell services, show proof, book calls. For consultants &amp; independents.</span></label>
+          <label class="type-card"><input type="radio" name="stype" value="business" /><b>Business</b><span>Services, trust &amp; contact. For small businesses.</span></label>
+        </div>
+      </section>
+
+      <!-- STEP 2 -->
+      <section class="step">
+        <div class="step-head"><span class="step-num">2</span><h2>Sections</h2></div>
+        <p class="step-desc">Tick what to show, rename anything, drag the order with the arrows.</p>
+        <div id="secList"></div>
+      </section>
+
+      <!-- STEP 3 -->
+      <section class="step">
+        <div class="step-head"><span class="step-num">3</span><h2>Design</h2></div>
+        <p class="step-desc">One accent color and one typeface. Restrained on purpose.</p>
+        <div class="field"><label>Accent color</label></div>
+        <div class="swatches" id="swatches"></div>
+        <div class="field">
+          <label for="fontSel">Typeface</label>
+          <select id="fontSel">
+            <option>Archivo</option>
+            <option>Inter</option>
+            <option>Space Grotesk</option>
+            <option>IBM Plex Sans</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- STEP 4 -->
+      <section class="step">
+        <div class="step-head"><span class="step-num">4</span><h2>Your details</h2></div>
+        <p class="step-desc">Fill what you know. Leave anything blank and the AI will pull it from your LinkedIn and GitHub.</p>
+        <div class="field"><label for="fName">Full name</label><input type="text" id="fName" placeholder="e.g. Priya Sharma" /></div>
+        <div class="field"><label for="fRole">Role / headline</label><input type="text" id="fRole" placeholder="e.g. Product Manager, fintech" /></div>
+        <div class="field"><label for="fHeadline">Big hero headline (3 short lines)</label><textarea id="fHeadline" rows="3" placeholder="You ship products&#10;people actually&#10;use."></textarea></div>
+        <div class="field"><label for="fSub">One-line intro</label><textarea id="fSub" rows="2" placeholder="What you do, who for, and why it matters."></textarea></div>
+        <div class="field"><label for="fAbout">About (a few sentences)</label><textarea id="fAbout" rows="3" placeholder="Who you are, where you're based, what you're good at."></textarea><p class="hint">Optional. The AI can draft this from your LinkedIn.</p></div>
+        <div class="field"><label for="fEmail">Email</label><input type="email" id="fEmail" placeholder="you@example.com" /></div>
+        <div class="field"><label for="fLinkedin">LinkedIn URL</label><input type="url" id="fLinkedin" placeholder="https://www.linkedin.com/in/you" /></div>
+        <div class="field"><label for="fGithub">GitHub username</label>
+          <div style="display:flex;gap:8px;"><input type="text" id="fGithub" placeholder="e.g. octocat" style="flex:1;" /><button class="btn btn-line btn-sm" id="loadRepos" type="button">Load repos</button></div>
+          <p class="hint">Public repos only. Tick the ones to feature.</p>
+        </div>
+        <div class="repo-list" id="repoList" style="display:none;"></div>
+        <div class="field" style="margin-top:14px;"><label for="fBooking">Booking link (optional)</label><input type="url" id="fBooking" placeholder="https://calendly.com/you/..." /><p class="hint">Adds &ldquo;Book a call&rdquo; buttons. Leave empty to hide them.</p></div>
+      </section>
+
+      <!-- STEP 5 -->
+      <section class="step">
+        <div class="step-head"><span class="step-num">5</span><h2>Build it</h2></div>
+        <p class="step-desc">This packs every choice above into a brief. Your AI agent does the rest: LinkedIn, copy, repo, deploy.</p>
+        <button class="btn btn-solid btn-big" id="buildBtn" type="button">Build my website</button>
+        <div id="briefOut">
+          <div class="field" style="margin:0 0 10px;"><label>Your build brief</label></div>
+          <textarea id="briefText" readonly></textarea>
+          <div class="brief-actions">
+            <button class="btn btn-solid btn-sm" id="copyBtn" type="button">Copy brief</button>
+            <a class="btn btn-line btn-sm" href="https://muse.ai" target="_blank" rel="noopener">Open Muse</a>
+            <span class="copied" id="copiedMsg">Copied. Paste it into your AI agent.</span>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="preview-col">
+      <div class="preview-bar"><b>Live preview</b><span>updates as you design</span></div>
+      <div class="preview-frame"><iframe id="preview" title="Website preview" src="../index.html"></iframe></div>
+    </div>
+  </div>
+</div>
+
+<footer class="b-foot">
+  <div class="wrap">
+    <p>An open-source project. The template, this builder, and the agent instructions are <a href="https://github.com/aakash1998/self-updating-portfolio">on GitHub</a>.</p>
+    <p>No account, no tracking, nothing leaves your browser until you paste the brief.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var SECTION_DEFS = [
+    { id: "work",     title: "Work" },
+    { id: "github",   title: "Fresh from GitHub", sub: true },
+    { id: "writing",  title: "Writing" },
+    { id: "services", title: "Services" },
+    { id: "about",    title: "About" },
+    { id: "contact",  title: "Contact" }
+  ];
+  var PRESETS = {
+    portfolio:  { work: 1, github: 1, writing: 1, services: 0, about: 1, contact: 1 },
+    freelancer: { work: 1, github: 0, writing: 0, services: 1, about: 1, contact: 1 },
+    business:   { work: 0, github: 0, writing: 0, services: 1, about: 1, contact: 1 }
+  };
+  var ACCENTS = ["#2B4BF2", "#E4572E", "#1E7A4C", "#7C3AED", "#0A0A0A"];
+  var ACCENT_NAMES = ["Cobalt", "Ember", "Forest", "Violet", "Ink"];
+
+  var state = {
+    type: "portfolio",
+    sections: SECTION_DEFS.map(function (d) {
+      return { id: d.id, title: d.title, sub: !!d.sub, enabled: !!PRESETS.portfolio[d.id] };
+    }),
+    accent: ACCENTS[0],
+    font: "Archivo",
+    featured: []
+  };
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function val(id) { var el = $(id); return el ? el.value.trim() : ""; }
+
+  /* ---------- section list ---------- */
+  function renderSections() {
+    var box = $("secList");
+    box.innerHTML = "";
+    var tops = state.sections.filter(function (s) { return !s.sub; });
+    state.sections.forEach(function (s) {
+      var row = document.createElement("div");
+      row.className = "sec-row" + (s.enabled ? "" : " off");
+      var idx = tops.indexOf(s);
+      var upDis = s.sub || idx <= 0 ? "disabled" : "";
+      var dnDis = s.sub || idx === tops.length - 1 ? "disabled" : "";
+      row.innerHTML =
+        '<input type="checkbox" class="tog" ' + (s.enabled ? "checked" : "") + ' aria-label="Show section" />' +
+        '<input type="text" class="t" value="' + esc(s.title) + '" aria-label="Section title" />' +
+        (s.sub ? '<span class="sec-tag">inside Work</span>' :
+          '<button class="mv" data-mv="-1" ' + upDis + ' title="Move up">&uarr;</button>' +
+          '<button class="mv" data-mv="1" ' + dnDis + ' title="Move down">&darr;</button>');
+      row.querySelector(".tog").addEventListener("change", function (e) {
+        s.enabled = e.target.checked;
+        row.classList.toggle("off", !s.enabled);
+        refresh();
+      });
+      row.querySelector(".t").addEventListener("input", function (e) {
+        s.title = e.target.value;
+        refresh();
+      });
+      row.querySelectorAll(".mv").forEach(function (b) {
+        b.addEventListener("click", function () {
+          var d = parseInt(b.getAttribute("data-mv"), 10);
+          moveSection(s.id, d);
+        });
+      });
+      box.appendChild(row);
+    });
+  }
+  function moveSection(id, d) {
+    var tops = state.sections.filter(function (s) { return !s.sub; });
+    var i = tops.findIndex(function (s) { return s.id === id; });
+    var j = i + d;
+    if (i < 0 || j < 0 || j >= tops.length) return;
+    var a = tops[i], b = tops[j];
+    var ai = state.sections.indexOf(a), bi = state.sections.indexOf(b);
+    state.sections[ai] = b; state.sections[bi] = a;
+    renderSections();
+    refresh();
+  }
+
+  /* ---------- site type ---------- */
+  $("typeCards").addEventListener("change", function (e) {
+    state.type = e.target.value;
+    document.querySelectorAll(".type-card").forEach(function (c) {
+      c.classList.toggle("on", c.querySelector("input").checked);
+    });
+    var p = PRESETS[state.type];
+    state.sections.forEach(function (s) { s.enabled = !!p[s.id]; });
+    renderSections();
+    refresh();
+  });
+
+  /* ---------- design ---------- */
+  function renderSwatches() {
+    var box = $("swatches");
+    box.innerHTML = "";
+    ACCENTS.forEach(function (c, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "sw" + (state.accent.toLowerCase() === c.toLowerCase() ? " on" : "");
+      b.style.background = c;
+      b.title = ACCENT_NAMES[i];
+      b.setAttribute("aria-label", ACCENT_NAMES[i]);
+      b.addEventListener("click", function () { state.accent = c; renderSwatches(); refresh(); });
+      box.appendChild(b);
+    });
+    var custom = document.createElement("input");
+    custom.type = "color";
+    custom.className = "sw-custom";
+    custom.value = /^#[0-9a-f]{6}$/i.test(state.accent) ? state.accent : "#2B4BF2";
+    custom.title = "Custom color";
+    custom.setAttribute("aria-label", "Custom accent color");
+    custom.addEventListener("input", function () { state.accent = custom.value; renderSwatches(); refresh(); });
+    box.appendChild(custom);
+  }
+  $("fontSel").addEventListener("change", function (e) { state.font = e.target.value; refresh(); });
+
+  /* ---------- GitHub repos ---------- */
+  $("loadRepos").addEventListener("click", function () {
+    var u = val("fGithub");
+    var box = $("repoList");
+    if (!u) { box.style.display = "none"; return; }
+    box.style.display = "block";
+    box.innerHTML = '<label><span style="color:#6B6B6B">Loading repos&hellip;</span></label>';
+    fetch("https://api.github.com/users/" + encodeURIComponent(u) + "/repos?per_page=100")
+      .then(function (r) { if (!r.ok) throw new Error("gh"); return r.json(); })
+      .then(function (repos) {
+        var list = repos.filter(function (r) { return !r.fork; }).slice(0, 30);
+        if (!list.length) throw new Error("empty");
+        box.innerHTML = "";
+        list.forEach(function (r) {
+          var lab = document.createElement("label");
+          var cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.checked = state.featured.indexOf(r.name) !== -1;
+          cb.addEventListener("change", function () {
+            if (cb.checked) { if (state.featured.indexOf(r.name) === -1) state.featured.push(r.name); }
+            else { state.featured = state.featured.filter(function (n) { return n !== r.name; }); }
+            refresh();
+          });
+          var tx = document.createElement("span");
+          tx.innerHTML = "<b>" + esc(r.name) + "</b><span>" + esc(r.description || "No description") + "</span>";
+          lab.appendChild(cb); lab.appendChild(tx);
+          box.appendChild(lab);
+        });
+      })
+      .catch(function () {
+        box.innerHTML = '<label><span style="color:#6B6B6B">Could not load repos. Check the username, or skip it — the AI will sort it out.</span></label>';
+      });
+  });
+
+  /* ---------- config + preview ---------- */
+  function brandFromName(name) {
+    var parts = name.split(/\s+/).filter(Boolean);
+    if (!parts.length) return "PORTFOLIO";
+    if (parts.length === 1) return parts[0].toUpperCase();
+    return (parts[0][0] + ". " + parts[parts.length - 1]).toUpperCase();
+  }
+
+  function buildConfig() {
+    var name = val("fName") || "Your Name";
+    var role = val("fRole") || "Your role / specialty";
+    var ghUser = val("fGithub");
+    var headline = val("fHeadline").split("\n").map(function (l) { return l.trim(); }).filter(Boolean);
+    while (headline.length < 3) headline.push(["You build things", "that do", "the work."][headline.length]);
+    return {
+      name: name,
+      title: name + " — " + role,
+      brand: brandFromName(name),
+      role: role,
+      headline_lines: headline.slice(0, 3),
+      hero_sub: val("fSub") || "One or two sentences: what you do, who you do it for, and why it matters.",
+      stats: [
+        { label: "Focus", value: role },
+        { label: "Based", value: "Your city — open to remote" },
+        { label: "Contact", value: val("fEmail") || "you@example.com" }
+      ],
+      sections: state.sections.map(function (s) { return { id: s.id, title: s.title || s.id, enabled: s.enabled }; }),
+      theme: { accent: state.accent, font: state.font },
+      work: [],
+      work_note: "Real things that run, not demos or tutorials. (The AI fills this in from your GitHub.)",
+      github: { username: ghUser, featured: state.featured.slice(), note: "selected repos, live data." },
+      github_url: ghUser ? "https://github.com/" + ghUser : "",
+      writing_note: "New posts land here automatically.",
+      services: [],
+      services_note: "Who this is for and what you do for them. (The AI drafts this from your one-liner.)",
+      services_cta: "Tell me what eats your team's time.",
+      about_lede: val("fAbout") || "A short paragraph about who you are, where you're based, and what you do.",
+      about_body: "",
+      timeline: [],
+      contact_big: "Let's talk.",
+      contact_note: "One or two sentences inviting the right people to reach out.",
+      email: val("fEmail"),
+      booking_url: val("fBooking"),
+      linkedin: val("fLinkedin"),
+      location: "",
+      footer_note: "",
+      meta_description: name + " — " + role,
+      og_title: name + " — " + role,
+      og_description: val("fSub")
+    };
+  }
+
+  var previewTimer = null;
+  function refresh() {
+    clearTimeout(previewTimer);
+    previewTimer = setTimeout(function () {
+      var cfg = encodeURIComponent(JSON.stringify(buildConfig()));
+      $("preview").src = "../index.html?preview=" + cfg;
+    }, 350);
+  }
+  ["fName", "fRole", "fHeadline", "fSub", "fAbout", "fEmail", "fLinkedin", "fGithub", "fBooking"].forEach(function (id) {
+    $(id).addEventListener("input", refresh);
+  });
+
+  /* ---------- brief ---------- */
+  var TYPE_LABEL = { portfolio: "Portfolio", freelancer: "Freelancer / services", business: "Small business" };
+  function buildBrief() {
+    var cfg = buildConfig();
+    var vis = state.sections.filter(function (s) { return s.enabled; }).map(function (s) { return s.title; }).join(", ");
+    var lines = [];
+    lines.push("# Website Build Brief");
+    lines.push("");
+    lines.push("I designed my website with the portfolio builder. Build it for me.");
+    lines.push("");
+    lines.push("## Source template");
+    lines.push("https://github.com/aakash1998/self-updating-portfolio");
+    lines.push("Follow the agent instructions in that repo's AGENTS.md. This brief replaces the 5 onboarding questions — use my choices below, then prefill anything blank from my LinkedIn and GitHub.");
+    lines.push("");
+    lines.push("## My choices");
+    lines.push("- Site type: " + TYPE_LABEL[state.type]);
+    lines.push("- Sections to show (in this order): " + (vis || "(none selected)"));
+    lines.push("- Accent color: " + state.accent);
+    lines.push("- Typeface: " + state.font);
+    lines.push("");
+    lines.push("## My details");
+    var d = [
+      ["Name", val("fName")], ["Role", val("fRole")],
+      ["Hero headline", val("fHeadline").split("\n").join(" / ")],
+      ["Intro", val("fSub")], ["About", val("fAbout")],
+      ["Email", val("fEmail")], ["LinkedIn", val("fLinkedin")],
+      ["GitHub", val("fGithub") ? val("fGithub") + (state.featured.length ? " (feature: " + state.featured.join(", ") + ")" : "") : ""],
+      ["Booking link", val("fBooking")]
+    ];
+    d.forEach(function (kv) { lines.push("- " + kv[0] + ": " + (kv[1] || "(blank — pull from LinkedIn/GitHub)")); });
+    lines.push("");
+    lines.push("## Site config");
+    lines.push("Write this to data/site.json, then prefill the empty parts (work, services, timeline, bio) from my LinkedIn profile and GitHub repos. Keep copy plain and specific — no lorem ipsum.");
+    lines.push("```json");
+    lines.push(JSON.stringify(cfg, null, 2));
+    lines.push("```");
+    lines.push("");
+    lines.push("## Do this for me");
+    lines.push("1. Fill every blank from my LinkedIn and GitHub. Never invent jobs, numbers, or credentials.");
+    lines.push("2. If my own words are rough, rewrite them in a natural voice — plain and specific.");
+    lines.push("3. Show me a short summary (name, role, sections, repos) and confirm before publishing.");
+    lines.push("4. Create a GitHub repo (suggested name: " + (val("fGithub") ? val("fGithub") + "-portfolio" : "my-portfolio") + "), push the site, deploy it, and hand me the live URL.");
+    return lines.join("\n");
+  }
+
+  $("buildBtn").addEventListener("click", function () {
+    $("briefText").value = buildBrief();
+    $("briefOut").classList.add("show");
+    $("copiedMsg").style.display = "none";
+    $("briefOut").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+  $("copyBtn").addEventListener("click", function () {
+    var t = $("briefText");
+    function done() {
+      $("copiedMsg").style.display = "inline";
+      setTimeout(function () { $("copiedMsg").style.display = "none"; }, 4000);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(t.value).then(done).catch(function () { t.select(); document.execCommand("copy"); done(); });
+    } else { t.select(); document.execCommand("copy"); done(); }
+  });
+
+  /* ---------- init ---------- */
+  renderSections();
+  renderSwatches();
+  refresh();
+})();
+</script>
+</body>
+</html>
