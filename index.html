@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio</title>
+  <meta name="description" content="" id="metaDescription" />
+  <meta property="og:title" content="" id="ogTitle" />
+  <meta property="og:description" content="" id="ogDescription" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/hero-art.webp" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%232B4BF2'/%3E%3Crect x='10' y='26' width='44' height='12' fill='%23000'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header class="site-header" id="siteHeader">
+    <div class="wrap header-inner">
+      <a class="brand" href="#top" id="brand">PORTFOLIO<span class="brand-sq" aria-hidden="true"></span></a>
+      <nav class="main-nav" aria-label="Primary">
+        <a href="#work">Work</a>
+        <a href="#writing">Writing</a>
+        <a href="#services">Services</a>
+        <a href="#about">About</a>
+      </nav>
+      <a class="btn btn-solid btn-sm" data-booking href="#" target="_blank" rel="noopener">Book a call</a>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- ============ HERO ============ -->
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="kicker reveal" id="heroKicker"></p>
+          <h1 class="reveal" id="heroHeadline"></h1>
+          <p class="hero-sub reveal" id="heroSub"></p>
+          <div class="hero-ctas reveal">
+            <a class="btn btn-solid" data-booking href="#" target="_blank" rel="noopener">Book a call</a>
+            <a class="btn btn-line" href="#work">See the work</a>
+          </div>
+        </div>
+        <figure class="hero-figure reveal">
+          <img src="assets/hero-art.webp" alt="Geometric composition" />
+        </figure>
+      </div>
+      <div class="wrap">
+        <dl class="fact-strip reveal" id="factStrip"></dl>
+      </div>
+    </section>
+
+    <!-- ============ 01 WORK ============ -->
+    <section class="section" id="work">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="sec-num">01</span>
+          <h2>Work</h2>
+        </div>
+        <p class="sec-note reveal" id="workNote"></p>
+
+        <div class="rows" id="workRows"></div>
+
+        <div class="gh-live reveal" id="githubLive">
+          <p class="sec-note gh-live-note"><span class="kicker-blue">Fresh from GitHub</span> &mdash; <span id="githubNote"></span></p>
+          <div class="rows" id="githubRows"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 02 WRITING ============ -->
+    <section class="section" id="writing">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="sec-num">02</span>
+          <h2>Writing</h2>
+        </div>
+        <p class="sec-note reveal" id="writingNote"></p>
+
+        <div class="rows" id="postsRows"></div>
+      </div>
+    </section>
+
+    <!-- ============ 03 SERVICES ============ -->
+    <section class="section" id="services">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="sec-num">03</span>
+          <h2>Services</h2>
+        </div>
+        <p class="sec-note reveal" id="servicesNote"></p>
+
+        <div class="svc-grid" id="svcGrid"></div>
+
+        <div class="svc-cta reveal">
+          <p class="svc-cta-text" id="svcCtaText"></p>
+          <div class="hero-ctas">
+            <a class="btn btn-solid" data-booking href="#" target="_blank" rel="noopener">Book a free call</a>
+            <a class="btn btn-line" data-email href="#">Email</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 04 ABOUT ============ -->
+    <section class="section" id="about">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="sec-num">04</span>
+          <h2>About</h2>
+        </div>
+        <div class="about-grid">
+          <div class="reveal">
+            <p class="about-lede" id="aboutLede"></p>
+            <p class="about-body" id="aboutBody"></p>
+            <div class="socials">
+              <a data-linkedin href="#" target="_blank" rel="noopener">LinkedIn &#8599;</a>
+              <a data-github href="#" target="_blank" rel="noopener">GitHub &#8599;</a>
+            </div>
+          </div>
+          <dl class="cv reveal" id="timeline"></dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 05 CONTACT ============ -->
+    <section class="section contact" id="contact">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="sec-num">05</span>
+          <h2>Contact</h2>
+        </div>
+        <p class="contact-big reveal" id="contactBig"></p>
+        <p class="sec-note reveal" id="contactNote"></p>
+        <div class="hero-ctas reveal">
+          <a class="btn btn-solid" data-booking href="#" target="_blank" rel="noopener">Book a free call</a>
+          <a class="btn btn-line" data-email href="#">Email</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <p>&copy; <span id="year">2026</span> <span id="footerName"></span></p>
+      <p id="footerNote"></p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
