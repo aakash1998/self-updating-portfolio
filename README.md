@@ -2,7 +2,7 @@
 
 A portfolio website that keeps itself fresh. Your GitHub repos update on their own, and your LinkedIn posts appear automatically. You never touch code.
 
-**[View the live demo](https://self-updating-portfolio.vercel.app)**
+**[View the live demo](https://aakash1998.github.io/self-updating-portfolio/)**
 
 ## Get yours in 3 steps — no technical skills needed
 
