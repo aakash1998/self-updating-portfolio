@@ -1,0 +1,73 @@
+# AGENTS.md — Self-Updating Portfolio
+
+This repo is a portfolio template designed to be personalized and deployed
+entirely by an AI agent. A non-technical user will paste this repo's URL into
+their AI assistant and say "make this portfolio mine". Your job is to take it
+from there with minimal questions.
+
+## The onboarding flow
+
+### Step 1 — Ask exactly these questions (nothing more unless something is unclear)
+
+1. "What's your LinkedIn profile URL?"
+2. "What's your GitHub username?"
+3. "What email should the contact buttons use?"
+4. "Do you have a booking link (like Calendly)? If yes, paste it — if no, just say no."
+5. "In one sentence: what services do you offer, or who do you want this site to reach?"
+
+### Step 2 — Prefill from LinkedIn
+
+Read their public LinkedIn profile (via the browser). Extract: full name,
+headline, about section, work experience (title, company, dates, one-line
+description each), education. Map this into `data/site.json`:
+`name`, `role` (from headline), `about_lede`, `about_body`, `timeline`,
+`linkedin` (their URL).
+
+### Step 3 — Prefill from GitHub
+
+Call `https://api.github.com/users/{username}/repos?per_page=100`. Exclude
+forks, tutorial repos, homework/assignment repos, and dotfiles/profile repos.
+Pick the 3 repos that best represent real work and propose them to the user
+("I'd feature these 3 — okay?"). Write the confirmed list to
+`data/site.json` → `github.featured`, and their username to
+`github.username`.
+
+### Step 4 — Confirm before building
+
+Show the user a short summary of what you found (name, role, the 3 repos,
+timeline entries) and ask: "Look right? Anything to change?" Do not publish
+anything until they confirm. Never invent jobs, numbers, or credentials.
+
+### Step 5 — Write data/site.json
+
+`data/site.json` is the ONLY file with personal content. Every field is
+documented by example in the shipped placeholder file. Rules:
+- `headline_lines`: exactly 3 short lines, rendered as the big hero headline.
+- `booking_url`: empty string hides all booking buttons gracefully.
+- `github.featured`: repo names exactly as on GitHub (case-insensitive match).
+- Keep copy plain and specific. No lorem ipsum in the final version.
+
+### Step 6 — Deploy
+
+1. Create a new GitHub repo under the user's account (e.g. `{username}-portfolio`),
+   push this template with their filled-in `data/site.json`.
+2. Deploy it: Vercel (import the repo, static, no build step) or GitHub Pages
+   (repo Settings → Pages → deploy from branch; `.nojekyll` is included).
+3. Hand the user their live URL.
+
+## Ongoing maintenance (the "self-updating" part)
+
+- **GitHub**: the site fetches live repo metadata (description, language,
+  last-updated) in the browser on every visit. Nothing to maintain. To feature
+  a different repo later, just edit `github.featured` in `data/site.json`.
+- **LinkedIn posts**: whenever you publish or schedule a LinkedIn post for
+  this user, append it to `data/posts.json`:
+  `{"posts": [{"title": "...", "body": "...", "url": "..."}]}`.
+  Newest first. The site renders them automatically on next deploy.
+
+## Design constraints
+
+- Keep the Swiss/typographic design: white, black, one cobalt accent
+  (#2B4BF2), Archivo type. No gradients, no decorative effects.
+- Never add pricing, fees, timelines, or guarantees unless the user explicitly
+  asks for them on the site.
