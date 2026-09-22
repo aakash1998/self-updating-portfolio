@@ -57,6 +57,84 @@
     if (el && value != null) el.textContent = value;
   }
 
+  /* Optional preview mode: ?preview=<urlencoded site.json> (used by /builder/) */
+  function getPreviewConfig() {
+    try {
+      var q = new URLSearchParams(window.location.search).get("preview");
+      return q ? JSON.parse(decodeURIComponent(q)) : null;
+    } catch (e) { return null; }
+  }
+
+  /* Theme: accent color + typeface, applied as CSS variables */
+  function applyTheme(theme) {
+    var t = theme || {};
+    var root = document.documentElement;
+    if (t.accent) root.style.setProperty("--blue", t.accent);
+    var font = t.font || "Archivo";
+    root.style.setProperty("--font", '"' + font + '", "Helvetica Neue", Arial, sans-serif');
+    var link = document.querySelector('link[href*="fonts.googleapis.com"]');
+    if (link) {
+      var fam = encodeURIComponent(font).replace(/%20/g, "+");
+      link.href = "https://fonts.googleapis.com/css2?family=" + fam +
+        ":ital,wdth,wght@0,62..125,400..900;1,62..125,400..900&family=JetBrains+Mono:wght@400;500;700&display=swap";
+    }
+    var icon = document.querySelector('link[rel="icon"]');
+    if (icon && t.accent) {
+      icon.href = "data:image/svg+xml," + encodeURIComponent(
+        "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' fill='" +
+        t.accent + "'/><rect x='10' y='26' width='44' height='12' fill='%23000'/></svg>");
+    }
+  }
+
+  /* Sections: visibility, order, numbering, titles, nav — all from config */
+  var TOP_SECTIONS = ["work", "writing", "services", "about", "contact"];
+  function applySections(sections) {
+    var cfg = {};
+    (sections || []).forEach(function (x) { cfg[x.id] = x; });
+    function enabled(id) { return !cfg[id] || cfg[id].enabled !== false; }
+    function title(id, fallback) { return (cfg[id] && cfg[id].title) || fallback; }
+
+    /* GitHub live block lives inside the Work section */
+    var gh = document.getElementById("githubLive");
+    if (gh && !enabled("github")) gh.style.display = "none";
+
+    /* Order + renumber the visible top-level sections */
+    var main = document.querySelector("main");
+    var order = TOP_SECTIONS.filter(enabled);
+    var n = 0;
+    order.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el || !main) return;
+      main.appendChild(el); /* move into config order */
+      n++;
+      var num = el.querySelector(".sec-num");
+      if (num) num.textContent = ("0" + n).slice(-2);
+      var h2 = el.querySelector(".sec-head h2");
+      if (h2) h2.textContent = title(id, h2.textContent);
+    });
+    TOP_SECTIONS.forEach(function (id) {
+      if (!enabled(id)) {
+        var el = document.getElementById(id);
+        if (el) el.style.display = "none";
+      }
+    });
+
+    /* Nav: one link per enabled section (contact stays out, as before) */
+    var nav = document.getElementById("mainNav");
+    if (nav) {
+      nav.innerHTML = order.filter(function (id) { return id !== "contact"; })
+        .map(function (id) { return '<a href="#' + id + '">' + esc(title(id, id)) + "</a>"; })
+        .join("");
+    }
+
+    /* Hero secondary button points at the first visible section */
+    var btn = document.getElementById("heroWorkBtn");
+    if (btn && order.length) {
+      btn.href = "#" + order[0];
+      btn.textContent = order[0] === "work" ? "See the work" : "Take a look";
+    }
+  }
+
   /* LinkedIn posts — rendered from data/posts.json */
   function loadPosts(linkedinUrl) {
     var box = document.getElementById("postsRows");
@@ -120,10 +198,16 @@
       });
   }
 
-  /* Main: render everything from data/site.json */
-  fetch("data/site.json", { cache: "no-store" })
-    .then(function (r) { if (!r.ok) throw new Error("site.json missing"); return r.json(); })
+  /* Main: render everything from data/site.json (or ?preview= config in builder mode) */
+  var previewConfig = getPreviewConfig();
+  var boot = previewConfig
+    ? Promise.resolve(previewConfig)
+    : fetch("data/site.json", { cache: "no-store" })
+        .then(function (r) { if (!r.ok) throw new Error("site.json missing"); return r.json(); });
+
+  boot
     .then(function (s) {
+      applyTheme(s.theme);
       document.title = s.title || (s.name + " — Portfolio");
       var md = document.getElementById("metaDescription");
       if (md) md.setAttribute("content", s.meta_description || "");
@@ -213,12 +297,14 @@
       });
 
       armReveals(document);
+      applySections(s.sections);
+      armReveals(document);
       loadPosts(s.linkedin);
       loadGitHub(s.github && s.github.username, s.github && s.github.featured);
     })
     .catch(function (err) {
       document.body.innerHTML = '<p style="font-family:sans-serif;padding:40px;max-width:600px">' +
         "This site renders from <strong>data/site.json</strong>, which could not be loaded. " +
-        "If you are setting this template up, copy <strong>data/site.example.json</strong> to <strong>data/site.json</strong> and fill it in.</p>";
+        "If you are setting this template up, edit <strong>data/site.json</strong> and fill it in.</p>";
     });
 })();
